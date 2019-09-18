@@ -27,6 +27,12 @@ Or install it yourself as:
 
     $ gem install blue_kitty
 
+## Usage
+
+For an example of how to use BlueKitty and its features, see this: https://github.com/fredlinhares/bkge-demo.
+
+For importing meshes to BlueKitty, you can use this: https://github.com/fredlinhares/bkge-import_mesh.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/fredlinhares/blue_kitty.
