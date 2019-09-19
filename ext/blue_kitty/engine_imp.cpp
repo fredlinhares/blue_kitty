@@ -97,16 +97,12 @@ Engine::Engine():
   this->loader.add(&Engine::load_vk_graphic_pipelines,
                    &Engine::unload_vk_graphic_pipelines);
   this->loader.add(&Engine::load_vk_frame_sync, &Engine::unload_vk_frame_sync);
-  this->loader.add(&Engine::load_vk_draw_command_pool,
-                   &Engine::unload_vk_draw_command_pool);
 
   this->loader.load();
 }
 
 Engine::~Engine()
 {
-  // Wait all commands to finish.
-  vkDeviceWaitIdle(this->devices[0]->get_vk_device());
   this->loader.unload();
 }
 
@@ -435,6 +431,10 @@ void Engine::load_vk_draw_command_pool()
 
 void Engine::unload_vk_draw_command_pool()
 {
+  // Wait all commands to finish.
+  vkDeviceWaitIdle(BKGE::engine->devices[0]->get_vk_device());
+  // Command buffers must be destroyed before the destruction of any data they
+  // are using.
   this->draw_command_pool = nullptr;
 }
 
@@ -703,6 +703,8 @@ bk_mEngine_loop_stage(VALUE self, VALUE current_stage)
   int frame_stop = 0;
   VALUE frame_last_duration = rb_float_new(0.0);
 
+  BKGE::engine->load_vk_draw_command_pool();
+
   while(TYPE(rb_ivar_get(self, id_at_at_quit_stage)) == T_FALSE)
   {
     // The key is the model and the value is a vector of entities.
@@ -768,6 +770,8 @@ bk_mEngine_loop_stage(VALUE self, VALUE current_stage)
       frame_last_duration = rb_float_new((double)frame_stop/1000.0);
     }
   }
+
+  BKGE::engine->unload_vk_draw_command_pool();
 
   return self;
 }

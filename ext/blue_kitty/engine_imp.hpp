@@ -57,6 +57,9 @@ class Engine
   get_graphic_pipeline_layout() const
   { return this->graphic_pipeline_layout; };
 
+  void load_vk_draw_command_pool();
+  void unload_vk_draw_command_pool();
+
   // Rendering to screen.
   void render(
       VALUE camera,
@@ -127,9 +130,6 @@ class Engine
 
   void load_vk_frame_sync();
   void unload_vk_frame_sync();
-
-  void load_vk_draw_command_pool();
-  void unload_vk_draw_command_pool();
 
   glm::mat4 update_ub_model_instance(
       uint32_t image_index, VALUE entity3d, bk_model_data* model_data);
