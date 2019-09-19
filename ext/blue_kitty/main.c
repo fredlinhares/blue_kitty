@@ -6,6 +6,7 @@
 #include "input_device.h"
 #include "keycode.h"
 #include "model.h"
+#include "texture.h"
 #include "vector3d.h"
 
 VALUE bk_m;
@@ -26,5 +27,6 @@ Init_blue_kitty(void)
   Init_blue_kitty_keycode();
   Init_blue_kitty_input_device();
   Init_blue_kitty_engine();
+  Init_blue_kitty_texture();
   Init_blue_kitty_model();
 }
