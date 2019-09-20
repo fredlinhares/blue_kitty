@@ -7,11 +7,11 @@ This project is a work in progress; currently, it is not suitable for any seriou
 
 ## Installation
 
-This gem links against SDL2 and Vulkan, so you need the development libraries installed on your system before installing this gem. Also, you need the GLSL compiler.
+This gem links against SDL2, Vulkan and GLM, so you need the development libraries installed on your system before installing this gem. Also, you need the GLSL compiler.
 
 For Debian/Ubuntu systems use:
 
-    $ sudo apt install libvulkan-dev libsdl2-dev glslang-tools
+    $ sudo apt install libvulkan-dev libsdl2-dev libglm-dev glslang-tools
 
 Add this line to your application's Gemfile:
 
