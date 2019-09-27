@@ -10,7 +10,9 @@
 
 #include "vk_device.hpp"
 
-struct bk_texture_data
+// Keep texture data into a separated object so it can be shared with a model
+// even after the Ruby object is destroyed.
+struct bk_sTexture
 {
   std::shared_ptr<BKVK::Device> device;
   VkImage vk_image;
@@ -19,6 +21,13 @@ struct bk_texture_data
   VkDeviceMemory vk_device_memory;
   uint32_t width, height;
   uint32_t mip_levels;
+
+  ~bk_sTexture();
+};
+
+struct bk_texture_data
+{
+  std::shared_ptr<bk_sTexture> texture;
 };
 
 struct bk_texture_data*

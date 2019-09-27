@@ -188,13 +188,12 @@ void GraphicPipeline::load_pipeline()
     frag_shader_stage_info
   };
 
-  VkVertexInputBindingDescription vertex_input_binding = {};
+  VkVertexInputBindingDescription vertex_input_binding{};
   vertex_input_binding.binding = 0;
   vertex_input_binding.stride = sizeof(Vertex);
   vertex_input_binding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-  static std::array<VkVertexInputAttributeDescription, 3>
-      vertex_attribute = {};
+  std::array<VkVertexInputAttributeDescription, 4> vertex_attribute{};
   // Position.
   vertex_attribute[0].location = 0;
   vertex_attribute[0].binding = 0;
@@ -210,6 +209,11 @@ void GraphicPipeline::load_pipeline()
   vertex_attribute[2].binding = 0;
   vertex_attribute[2].format = VK_FORMAT_R32G32B32_SFLOAT;
   vertex_attribute[2].offset = offsetof(Vertex, color);
+  // Texture coordinate.
+  vertex_attribute[3].location = 3;
+  vertex_attribute[3].binding = 0;
+  vertex_attribute[3].format = VK_FORMAT_R32G32_SFLOAT;
+  vertex_attribute[3].offset = offsetof(Vertex, texture_coord);
 
   VkPipelineVertexInputStateCreateInfo vertex_input_info = {};
   vertex_input_info.sType =

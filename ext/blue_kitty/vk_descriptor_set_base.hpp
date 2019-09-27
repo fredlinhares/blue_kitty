@@ -26,9 +26,6 @@ class Base
   std::shared_ptr<DSL::Base> descriptor_set_layout;
   std::vector<VkDescriptorSet> vk_descriptor_sets;
 
-  void load_pool();
-  void unload_pool();
-
   void load_sets();
   void unload_sets();
 

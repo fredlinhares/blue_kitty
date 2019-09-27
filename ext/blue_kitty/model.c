@@ -9,5 +9,5 @@ Init_blue_kitty_model(void)
 
   // If I call 'rb_define_method' from C++ it won't compile. So I call in a
   // different file.
-  rb_define_method(bk_cModel, "initialize", bk_cModel_initialize, 1);
+  rb_define_method(bk_cModel, "initialize", bk_cModel_initialize, 2);
 }

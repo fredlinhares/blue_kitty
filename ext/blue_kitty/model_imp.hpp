@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 
+#include "texture_imp.hpp"
 #include "vk_descriptor_set_model_instance.hpp"
 #include "vk_destination_buffer.hpp"
 #include "vk_graphic_pipeline.hpp"
@@ -25,6 +26,7 @@ struct bk_model_data
   Loader::Stack<bk_model_data> *loader;
 
   std::string model_path;
+  std::shared_ptr<bk_sTexture> texture;
 
   uint32_t index_count;
   std::shared_ptr<BKVK::DestinationBuffer> index_buffer;

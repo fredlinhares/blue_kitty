@@ -25,6 +25,9 @@ class ViewProjection: public Base
  private:
   Loader::Stack<ViewProjection> loader;
 
+  void load_pool();
+  void unload_pool();
+
   void load_buffers();
   void unload_buffers();
 };

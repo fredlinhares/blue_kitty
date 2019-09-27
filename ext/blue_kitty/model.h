@@ -15,7 +15,7 @@ VALUE
 bk_alloc_model(VALUE klass);
 
 VALUE
-bk_cModel_initialize(VALUE self, VALUE file_path);
+bk_cModel_initialize(VALUE self, VALUE file_path, VALUE texture);
 
 void
 Init_blue_kitty_model(void);

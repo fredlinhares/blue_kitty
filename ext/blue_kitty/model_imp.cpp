@@ -20,6 +20,14 @@ uint32_t read_uint32_from_file(std::ifstream &input_file)
   return data;
 }
 
+glm::vec2 read_vec2_from_file(std::ifstream &input_file)
+{
+  glm::vec2 data{};
+  input_file.read((char*)&data.x, sizeof(glm::vec2::value_type));
+  input_file.read((char*)&data.y, sizeof(glm::vec2::value_type));
+  return data;
+}
+
 glm::vec3 read_vec3_from_file(std::ifstream &input_file)
 {
   glm::vec3 data{};
@@ -86,7 +94,7 @@ bk_memsize_model(const void* obj)
 */
 
 VALUE
-bk_cModel_initialize(VALUE self, VALUE file_path)
+bk_cModel_initialize(VALUE self, VALUE file_path, VALUE texture)
 {
   if(!engine_inilialized)
     rb_raise(rb_eRuntimeError, "%s",
@@ -95,10 +103,17 @@ bk_cModel_initialize(VALUE self, VALUE file_path)
 
   SafeStringValue(file_path);
 
+  if(!rb_obj_is_kind_of(texture, bk_cTexture))
+    rb_raise(rb_eArgError, "%s", "initialize expect a Texture as argument.");
+
+
   struct bk_model_data *ptr;
   TypedData_Get_Struct(self, struct bk_model_data, &bk_model_type, ptr);
 
+  bk_texture_data *ptr_texture{bk_cTexture_get_data(texture)};
+
   ptr->model_path = StringValueCStr(file_path);
+  ptr->texture = ptr_texture->texture;
 
   ptr->loader->add(&bk_model_data::load_mesh, &bk_model_data::unload_mesh);
   ptr->loader->add(&bk_model_data::load_uniform_buffers,
@@ -159,6 +174,7 @@ bk_model_data::load_mesh()
       {
         vertexes[i].position = read_vec3_from_file(input_file);
         vertexes[i].normal = read_vec3_from_file(input_file);
+        vertexes[i].texture_coord = read_vec2_from_file(input_file);
         vertexes[i].color = mesh.color;
       }
     }
@@ -220,7 +236,7 @@ bk_model_data::load_descriptor_sets()
 {
   this->ds_model_instance = std::make_shared<BKVK::DS::ModelInstance>(
       BKGE::engine->get_graphic_pipeline_layout()->get_dsl_model_instance(),
-      this->ub_model_instance);
+      this->texture, this->ub_model_instance);
 }
 
 void

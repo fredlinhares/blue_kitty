@@ -53,13 +53,6 @@ bk_free_texture(void* obj)
   struct bk_texture_data *ptr;
   ptr = static_cast<bk_texture_data*>(obj);
 
-  VkDevice vk_device{ptr->device->get_vk_device()};
-
-  vkDestroyImageView(vk_device, ptr->vk_view, nullptr);
-  vkDestroySampler(vk_device, ptr->vk_sampler, nullptr);
-  vkDestroyImage(vk_device, ptr->vk_image, nullptr);
-  vkFreeMemory(vk_device, ptr->vk_device_memory, nullptr);
-
   delete ptr;
 }
 
@@ -85,6 +78,7 @@ bk_alloc_texture(VALUE klass)
   struct bk_texture_data *ptr;
 
   ptr = new bk_texture_data{};
+  ptr->texture = std::make_shared<bk_sTexture>();
   obj = TypedData_Wrap_Struct(klass, &bk_texture_type, ptr);
 
   return obj;
@@ -99,8 +93,9 @@ bk_cTexture_initialize(VALUE self, VALUE file_path)
 {
   SafeStringValue(file_path);
 
-  struct bk_texture_data *ptr;
-  TypedData_Get_Struct(self, struct bk_texture_data, &bk_texture_type, ptr);
+  bk_texture_data *ptr_d;
+  TypedData_Get_Struct(self, struct bk_texture_data, &bk_texture_type, ptr_d);
+  std::shared_ptr<bk_sTexture> ptr{ptr_d->texture};
 
   std::shared_ptr<BKVK::Device> device{BKGE::engine->get_devices()[0]};
   ptr->device = device;
@@ -273,6 +268,16 @@ bk_cTexture_initialize(VALUE self, VALUE file_path)
   SDL_FreeSurface(image);
 
   return self;
+}
+
+bk_sTexture::~bk_sTexture()
+{
+  VkDevice vk_device{this->device->get_vk_device()};
+
+  vkDestroyImageView(vk_device, this->vk_view, nullptr);
+  vkDestroySampler(vk_device, this->vk_sampler, nullptr);
+  vkDestroyImage(vk_device, this->vk_image, nullptr);
+  vkFreeMemory(vk_device, this->vk_device_memory, nullptr);
 }
 
 struct bk_texture_data*
