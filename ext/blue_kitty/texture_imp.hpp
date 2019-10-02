@@ -5,6 +5,7 @@
 #include "texture.h"
 
 #include <memory>
+#include <string>
 
 #include <SDL2/SDL_image.h>
 
@@ -14,6 +15,9 @@
 // even after the Ruby object is destroyed.
 struct bk_sTexture
 {
+  Loader::Stack<bk_sTexture> *loader;
+  std::string texture_path;
+
   std::shared_ptr<BKVK::Device> device;
   VkImage vk_image;
   VkSampler vk_sampler;
@@ -23,6 +27,15 @@ struct bk_sTexture
   uint32_t mip_levels;
 
   ~bk_sTexture();
+
+  void load_image();
+  void unload_image();
+
+  void load_sampler();
+  void unload_sampler();
+
+  void load_view();
+  void unload_view();
 };
 
 struct bk_texture_data
