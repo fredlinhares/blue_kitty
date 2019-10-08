@@ -272,26 +272,19 @@ bk_sTexture::unload_sampler()
 void
 bk_sTexture::load_view()
 {
-  VkImageViewCreateInfo image_view_info{};
-  image_view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-  image_view_info.pNext = nullptr;
-  image_view_info.flags = 0;
-  image_view_info.image = this->vk_image;
-  image_view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-  image_view_info.format = VK_FORMAT_R8G8B8A8_UNORM;
-  image_view_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-  image_view_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-  image_view_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-  image_view_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-  image_view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-  image_view_info.subresourceRange.baseMipLevel = 0;
-  image_view_info.subresourceRange.levelCount = 1;
-  image_view_info.subresourceRange.baseArrayLayer = 0;
-  image_view_info.subresourceRange.layerCount = 1;
-
-  if(vkCreateImageView(this->device->get_vk_device(), &image_view_info,
-                       nullptr, &this->vk_view) != VK_SUCCESS)
-    throw Loader::Error{"Failed to create texture view."};
+  try
+  {
+    BKVK::Image::create_view(
+        this->device,
+        &this->vk_view,
+        this->vk_image,
+        VK_FORMAT_R8G8B8A8_UNORM,
+        VK_IMAGE_ASPECT_COLOR_BIT);
+  }
+  catch(BKVK::Image::Error le)
+  {
+    throw Loader::Error{le.message};
+  }
 }
 
 void

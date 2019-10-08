@@ -68,4 +68,35 @@ void create(
 
   vkBindImageMemory(device->get_vk_device(), *vk_image, *vk_image_memory, 0);
 }
+
+void create_view(
+    std::shared_ptr<Device> device,
+    VkImageView *vk_image_view,
+    const VkImage &vk_image,
+    VkFormat vk_format,
+    VkImageAspectFlags vk_image_aspect_flags)
+{
+  VkImageViewCreateInfo image_view_info{};
+  image_view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+  image_view_info.pNext = nullptr;
+  image_view_info.flags = 0;
+  image_view_info.image = vk_image;
+  image_view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+  image_view_info.format = vk_format;
+  image_view_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+  image_view_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+  image_view_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+  image_view_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+  image_view_info.subresourceRange.aspectMask = vk_image_aspect_flags;
+  image_view_info.subresourceRange.baseMipLevel = 0;
+  image_view_info.subresourceRange.levelCount = 1;
+  image_view_info.subresourceRange.baseArrayLayer = 0;
+  image_view_info.subresourceRange.layerCount = 1;
+
+  if(vkCreateImageView(device->get_vk_device(), &image_view_info,
+                       nullptr, vk_image_view) != VK_SUCCESS)
+    throw Error{"Failed to create texture view."};
+
+}
+
 }

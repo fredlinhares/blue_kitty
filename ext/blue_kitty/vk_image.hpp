@@ -27,6 +27,13 @@ void create(
     uint32_t mip_levels,
     VkImageTiling vk_image_tiling,
     VkImageUsageFlags vk_usage);
+
+void create_view(
+    std::shared_ptr<Device> device,
+    VkImageView *vk_image_view,
+    const VkImage &vk_image,
+    VkFormat vk_format,
+    VkImageAspectFlags vk_image_aspect_flags);
 }
 
 #endif /* BLUE_KITTY_VK_IMAGE_HPP */
