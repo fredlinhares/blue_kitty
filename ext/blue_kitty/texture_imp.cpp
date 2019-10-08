@@ -5,6 +5,7 @@
 #include "engine_imp.hpp"
 #include "error.h"
 #include "vk_command_pool.hpp"
+#include "vk_image.hpp"
 #include "vk_queue_family.hpp"
 #include "vk_source_buffer.hpp"
 
@@ -159,50 +160,27 @@ bk_sTexture::load_image()
 
   // Create vulkan image.
   {
-    VkImageCreateInfo image_info{};
-    image_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-    image_info.pNext = nullptr;
-    image_info.flags = 0;
-    image_info.imageType = VK_IMAGE_TYPE_2D;
-    image_info.format = VK_FORMAT_R8G8B8A8_UNORM;
-    image_info.extent.width = this->width;
-    image_info.extent.height = this->height;
-    image_info.extent.depth = 1;
-    image_info.mipLevels = this->mip_levels;
-    image_info.arrayLayers = 1;
-    image_info.samples = VK_SAMPLE_COUNT_1_BIT;
-    image_info.tiling = VK_IMAGE_TILING_OPTIMAL;
-    image_info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT |
-                       VK_IMAGE_USAGE_SAMPLED_BIT;
-    image_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    image_info.queueFamilyIndexCount = 0;
-    image_info.pQueueFamilyIndices = nullptr;
-    image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-
-    if(vkCreateImage(
-           this->device->get_vk_device(), &image_info, nullptr,
-           &this->vk_image) != VK_SUCCESS)
-      throw Loader::Error{"Failed to create Vulkan image."};
-
-    VkMemoryRequirements vk_memory_requirements;
-    vkGetImageMemoryRequirements(this->device->get_vk_device(), this->vk_image,
-                                 &vk_memory_requirements);
-
-    VkMemoryAllocateInfo memory_alloc_info{};
-    memory_alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    memory_alloc_info.allocationSize = vk_memory_requirements.size;
-    memory_alloc_info.memoryTypeIndex = device->select_memory_type(
-        vk_memory_requirements, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-    if(vkAllocateMemory(this->device->get_vk_device(), &memory_alloc_info,
-                        nullptr, &this->vk_device_memory) != VK_SUCCESS)
+    try
     {
-      vkDestroyImage(this->device->get_vk_device(), this->vk_image, nullptr);
-      throw Loader::Error{"Failed to allocate memory for Vulkan image."};
-    }
+      VkExtent3D vk_extent3d{};
+      vk_extent3d.width = this->width;
+      vk_extent3d.height = this->height;
+      vk_extent3d.depth = 1;
 
-    vkBindImageMemory(this->device->get_vk_device(), this->vk_image,
-                      this->vk_device_memory, 0);
+      BKVK::Image::create(
+          this->device,
+          &this->vk_image,
+          &this->vk_device_memory,
+          VK_FORMAT_R8G8B8A8_UNORM,
+          vk_extent3d,
+          this->mip_levels,
+          VK_IMAGE_TILING_OPTIMAL,
+          VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+    }
+    catch(BKVK::Image::Error le)
+    {
+      throw Loader::Error{le.message};
+    }
   }
 
   // Copy image from vulkan buffer into vulkan image.
